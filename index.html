@@ -44,27 +44,39 @@
   </body>
 </htm>
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+package com.example.learnroomdatabase
 
-@Dao
-interface  StudentDao {
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 
-    @Query("SELECT * FROM student_table")
-     fun getAll():List<Student>
+@Database(entities = [Student::class],version=1)
+abstract class AppDatabase: RoomDatabase() {
+    abstract fun studentDao(): StudentDao
 
-    @Query("SELECT * FROM student_table WHERE roll_no LIKE :roll LIMIT 1")
-      fun findByRoll(roll:Int):Student
+    companion object{
 
-    @Insert(onConflict= OnConflictStrategy.IGNORE)
-     fun insert(student: Student):Long
+        @Volatile
+        private  var INSTANCE:AppDatabase?=null
 
-    @Delete
-     fun delete(student: Student)
+        fun getDatabase(context:Context):AppDatabase{
 
-    @Query("DELETE FROM student_table")
-      fun deleteAll()
+            val tempInstance = INSTANCE
+            if(tempInstance!=null){
+                return tempInstance
+            }
+
+            synchronized(this){
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "app_database"
+                ).build()
+                INSTANCE=instance
+                return instance
+            }
+        }
+
+    }
 }
