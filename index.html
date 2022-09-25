@@ -46,106 +46,20 @@
 
 package com.example.learnroomdatabase
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.widget.Toast
-import com.example.learnroomdatabase.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.annotation.Discouraged
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-class MainActivity : AppCompatActivity() {
+@Entity(tableName="student_table")
+data class Student (
 
-    private lateinit var binding: ActivityMainBinding
-    private  lateinit var appDb: AppDatabase
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        binding=ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        //setContentView(R.layout.activity_main)
-
-        appDb=AppDatabase.getDatabase(this)
-
-        binding.btnReadData.setOnClickListener({
-                readData()
-            }
-        )
-
-        binding.btnWriteData.setOnClickListener({
-            WriteData()
-        })
-
-        binding.btnDeleteAll.setOnClickListener({
-            deleteAllData()
-        })
-    }
-    private suspend fun displayData(student: Student)
-    {
-
-        withContext(Dispatchers.Main)
-        {
-            if(student.firstName==null)
-            {
-                Toast.makeText(this@MainActivity,"table empty",Toast.LENGTH_SHORT).show()
-            }
-            binding.tvFirstName.text=student.firstName + " " + student.lastName + " " + student.rollNo
-//            binding.tvLastName.text=student.lastName
-//            binding.tvRollNo.text=student.rollNo.toString()
-        }
-    }
-    private  fun readData(){
-        val rollno=binding.etRollNoRead.text.toString()
-
-        if(rollno.isNotEmpty())
-        {
-            lateinit var student: Student
-
-            GlobalScope.launch {
-                student=appDb.studentDao().findByRoll(rollno.toInt())
-
-                displayData(student)
-            }
-
-            binding.etRollNoRead.text.clear()
-        }
-    }
-
-    private  fun WriteData(){
-
-        val firstName= binding.etFirstName.text.toString()
-        val lastName=binding.etLastName.text.toString()
-        val rollNo = binding.etRollNo.text.toString()
-
-        if(firstName.isNotEmpty()&&lastName.isNotEmpty()&&rollNo.isNotEmpty())
-        {
-            val student=Student(
-                null,firstName,lastName,rollNo.toInt()
-            )
-
-            GlobalScope.launch(Dispatchers.IO){
-                appDb.studentDao().insert(student)
-            }
-            binding.etFirstName.text.clear()
-            binding.etLastName.text.clear()
-            binding.etRollNo.text.clear()
-
-            Toast.makeText(this,"successfully added",Toast.LENGTH_SHORT).show()
-        }else
-        {
-            Toast.makeText(this,"please enter data",Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private  fun deleteAllData(){
-        GlobalScope.launch {
-
-            appDb.studentDao().deleteAll()
-        }
-        binding.tvFirstName.text=""
-        binding.tvLastName.text=""
-        binding.tvRollNo.text=""
-    }
-}
+    @PrimaryKey(autoGenerate = true)
+    val id:Int?,
+    @ColumnInfo(name="first_name")
+    val firstName:String?,
+    @ColumnInfo(name="last_name")
+    val lastName:String?,
+    @ColumnInfo(name="roll_no")
+    val rollNo:Int?,
+)
