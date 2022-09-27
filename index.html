@@ -44,10 +44,18 @@
   </body>
 </htm>
 
-def room_version = "2.4.2"
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-    implementation "androidx.room:room-ktx:$room_version"
-    implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+@Entity(tableName="todo_table")
+data class Todo(
+    @PrimaryKey(autoGenerate = true)
+    var id:Int,
+
+    @ColumnInfo(name = "title")
+    var title:String?,
+
+    @ColumnInfo(name="description")
+    var description:String?
+)
