@@ -44,18 +44,22 @@
   </body>
 </htm>
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.lifecycle.LiveData
+import androidx.room.*
 
-@Entity(tableName="todo_table")
-data class Todo(
-    @PrimaryKey(autoGenerate = true)
-    var id:Int,
 
-    @ColumnInfo(name = "title")
-    var title:String?,
+@Dao
+interface TodoDao {
 
-    @ColumnInfo(name="description")
-    var description:String?
-)
+    @Query("SELECT * FROM todo_table")
+    fun getAllTodo(): LiveData<List<Todo>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertTodo(todo:Todo)
+
+    @Update
+    fun updateTodo(todo:Todo)
+
+    @Delete
+    fun deleteTodo(todo:Todo)
+}
