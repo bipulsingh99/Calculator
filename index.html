@@ -44,37 +44,21 @@
   </body>
 </htm>
 
-import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.lifecycle.LiveData
 
-@Database(entities=[Todo::class],version=1)
-abstract class TodoDatabase: RoomDatabase() {
+class TodoRepository(private val todoDao:TodoDao) {
 
-    abstract fun getTodoDao():TodoDao
+    val allTodo:LiveData<List<Todo>> = todoDao.getAllTodo()
 
-    companion object{
+    fun insert(todo:Todo){
+        todoDao.insertTodo(todo)
+    }
 
-        @Volatile
-        private var INSTANCE:TodoDatabase? = null
+    fun update(todo:Todo){
+        todoDao.updateTodo(todo)
+    }
 
-        fun getTodoDatabase(context: Context):TodoDatabase {
-            val tempInstance = INSTANCE
-
-            if(tempInstance!=null)
-                return tempInstance
-
-            synchronized(this){
-                val instance= Room.databaseBuilder(
-                    context.applicationContext,
-                    TodoDatabase::class.java,
-                    "todo_database"
-                ).build()
-
-                INSTANCE=instance
-                return instance
-            }
-        }
+    fun delete(todo:Todo){
+        todoDao.deleteTodo(todo)
     }
 }
