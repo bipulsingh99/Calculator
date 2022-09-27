@@ -44,21 +44,3 @@
   </body>
 </htm>
 
-import androidx.lifecycle.LiveData
-
-class TodoRepository(private val todoDao:TodoDao) {
-
-    val allTodo:LiveData<List<Todo>> = todoDao.getAllTodo()
-
-    fun insert(todo:Todo){
-        todoDao.insertTodo(todo)
-    }
-
-    fun update(todo:Todo){
-        todoDao.updateTodo(todo)
-    }
-
-    fun delete(todo:Todo){
-        todoDao.deleteTodo(todo)
-    }
-}
